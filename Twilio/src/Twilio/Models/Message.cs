@@ -19,22 +19,28 @@ namespace Twilio.Models
         public static List<Message> GetMessages()
         {
             var client = new RestClient("https://api.twilio.com/2010-04-01");
-            var request = new RestRequest("Accounts/{{Account SID}}/Messages.json", Method.GET);
-            client.Authenticator = new HttpBasicAuthenticator("{{Account SID}}", "{{Auth Token}}");
+
+            var request = new RestRequest("Accounts/" + EnvironmentVariables.AccountSid + "/Messages.json", Method.GET);
+            client.Authenticator = new HttpBasicAuthenticator(EnvironmentVariables.AccountSid, EnvironmentVariables.AuthToken);
+
             var response = client.Execute(request);
+
             JObject jsonResponse = (JObject)JsonConvert.DeserializeObject(response.Content);
+
             var messageList = JsonConvert.DeserializeObject<List<Message>>(jsonResponse["messages"].ToString());
             return messageList;
         }
         public void Send()
         {
             var client = new RestClient("https://api.twilio.com/2010-04-01");
-            var request = new RestRequest("Accounts/{{Account SID}}/Messages", Method.POST);
+
+            var request = new RestRequest("Accounts/" + EnvironmentVariables.AccountSid + "/Messages", Method.POST);
+
             request.AddParameter("To", To);
             request.AddParameter("From", From);
             request.AddParameter("Body", Body);
             request.AddParameter("Status", Status);
-            client.Authenticator = new HttpBasicAuthenticator("{{Account SID}}", "{{Auth Token}}");
+            client.Authenticator = new HttpBasicAuthenticator(EnvironmentVariables.AccountSid, EnvironmentVariables.AuthToken);
             client.Execute(request);
         }
     }
